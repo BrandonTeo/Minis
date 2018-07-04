@@ -5,7 +5,7 @@ $("ul").on("click", "li", function() {
 
 // `li`s should be removed when the span is clicked
 $("ul").on("click", ".trash", function(e) {
-    $(this).parent().fadeOut(500, function() {
+    $(this).parent().fadeOut(300, function() {
         $(this).remove();
     });
     e.stopPropagation();
@@ -14,7 +14,7 @@ $("ul").on("click", ".trash", function(e) {
 // new todo should be added when `enter` key is pressed
 $("input").keypress(function(e) {
     if(e.which === 13) {
-        var toDoHTML = "<li><span class=\"trash\">O</span> " + $(this).val() + "</li>";
+        var toDoHTML = "<li><span class=\"trash\">o</span> " + $(this).val() + "</li>";
         $("ul").append(toDoHTML);
         $(this).val("");
     }
