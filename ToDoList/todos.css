@@ -2,10 +2,13 @@ body {
     background: #005aa7; /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #005aa7, #fffde4); /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #005aa7, #fffde4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    
+    /* Same font throughout whole thing */
     font-family: "Roboto";
 }
 
 .container {
+    /* Fixed width for the container */
     width: 360px;
     margin: 100px auto;
     box-shadow: 1px 1px rgba(0, 0, 0, 0.1);
@@ -13,38 +16,46 @@ body {
 
 h1 {
     width: 100%;
+    height: 50px;
     margin: 0;
     padding: 5px 18px;
+    /* This means our content height is `height` - (2 * `padding`) */
     box-sizing: border-box;
-    background: rgb(66, 93, 212);
 
-    text-transform: uppercase;
+    background: rgb(66, 93, 212);
     color: white;
-    letter-spacing: 1px;
-    font-weight: normal;
     font-size: 25px;
-    height: 50px;
+    font-weight: normal;
     line-height: 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.fa-pencil-alt {
+    float: right;
+    margin-top: 6px;
 }
 
 input {
     width: 100%;
     height: 45px;
-    border: 2px solid rgba(247, 247, 247, 0);
+    padding-left: 20px;
+    /* Set an invisible border with same color as background */
+    border: 3px solid rgba(247, 247, 247, 0);
     outline: none;
     box-sizing: border-box;
+
     background: #f7f7f7;
-    padding-left: 20px;
     font-size: 20px;
-    transition: all 0.2s;
+    transition: all 0.1s;
 }
 
 input:hover {
-    border: 2px solid rgb(66, 93, 212);
+    border: 3px solid rgb(66, 93, 212);
 }
 
 input:focus {
-    border: 2px solid rgb(66, 93, 212);
+    border: 3px solid rgb(66, 93, 212);
 }
 
 ul {
@@ -54,18 +65,36 @@ ul {
 }
 
 li {
-    padding: 5px 18px;
-    height: 25px;
-    line-height: 25px;
-    font-size: 14px;
+    height: 35px;
+    padding-left: 18px;
+
+    /* First to-do should have white background */
     background: white;
+    font-size: 15px;
+    line-height: 35px;
 }
 
 li:nth-of-type(2n) {
     background: #f7f7f7;
 }
 
+.trash {
+    width: 0px;
+    height: 35px;
+    float: right;
+
+    background: red;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.3s linear;
+}
+
+/* When `li` is hovered, we display `.trash` */
+li:hover .trash {
+    width: 35px;
+    opacity: 1.0;
+}
+
 .completed {
-    color: gray;
     text-decoration: line-through;
 }

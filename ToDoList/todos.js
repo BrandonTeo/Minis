@@ -11,10 +11,17 @@ $("ul").on("click", ".trash", function(e) {
     e.stopPropagation();
 });
 
-// new todo should be added when `enter` key is pressed
+// Toggles the input interface
+$(".fa-pencil-alt").click(function() {
+    $("input").fadeToggle(0);
+    $("input").focus();
+});
+
+// New todo should be added when `enter` key is pressed
 $("input").keypress(function(e) {
-    if(e.which === 13) {
-        var toDoHTML = "<li><span class=\"trash\">o</span> " + $(this).val() + "</li>";
+    // Input is required
+    if(e.which === 13 && $(this).val() !== "") {
+        var toDoHTML = "<li>" + $(this).val() + "<span class=\"trash\"><i class=\"fas fa-minus-square\"></i></span></li>";
         $("ul").append(toDoHTML);
         $(this).val("");
     }
