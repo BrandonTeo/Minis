@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>myPatatap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="patatap.css">
+
+    <script src="lib/paper-full.min.js"></script>
+    <script type="text/paperscript" canvas="myCanvas">
+
+    function myRandom(num1, num2) {
+        return Math.floor(num1 + (Math.random() * (num2 - num1)));
+    }
+
+    function onKeyDown(event) {
+        var minRadius = 5;
+        var maxRadius = 30;
+        var x = myRandom(0, view.size.width);
+        var y = myRandom(0, view.size.height);
+        var currCircle = new Path.Circle(new Point(x, y), myRandom(minRadius, maxRadius));
+        currCircle.fillColor = "rgb(" + myRandom(50, 256) + ", " + myRandom(50, 256) + ", " + myRandom(50, 256) + ")";
+    }
+
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas" resize></canvas>
+</body>
+</html>
