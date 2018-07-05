@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="patatap.css">
 
     <script src="lib/paper-full.min.js"></script>
+    <script src="lib/howler.min.js"></script>
     <script type="text/paperscript" canvas="myCanvas">
+
+    var soundLib = {
+        a:["lib/sounds/bubbles.mp3"], b:["lib/sounds/clay.mp3"], c:["lib/sounds/confetti.mp3"], d:["lib/sounds/corona.mp3"], e:["lib/sounds/dotted-spiral.mp3"],
+        f:["lib/sounds/flash-1.mp3"], g:["lib/sounds/flash-2.mp3"], h:["lib/sounds/flash-3.mp3"], i:["lib/sounds/glimmer.mp3"], j:["lib/sounds/moon.mp3"],
+        k:["lib/sounds/pinwheel.mp3"], l:["lib/sounds/piston-1.mp3"], m:["lib/sounds/piston-2.mp3"], n:["lib/sounds/piston-3.mp3"], o:["lib/sounds/prism-1.mp3"],
+        p:["lib/sounds/prism-2.mp3"], q:["lib/sounds/prism-3.mp3"], r:["lib/sounds/splits.mp3"], s:["lib/sounds/squiggle.mp3"], t:["lib/sounds/strike.mp3"],
+        u:["lib/sounds/suspension.mp3"], v:["lib/sounds/timer.mp3"], w:["lib/sounds/ufo.mp3"], x:["lib/sounds/veil.mp3"], y:["lib/sounds/wipe.mp3"],
+        z:["lib/sounds/zig-zag.mp3"]
+    };
 
     function myRandom(num1, num2) {
         return Math.floor(num1 + (Math.random() * (num2 - num1)));
@@ -16,13 +26,17 @@
 
     var circles = [];
     function onKeyDown(event) {
-        var minRadius = 100;
-        var maxRadius = 500;
-        var x = myRandom(0, view.size.width);
-        var y = myRandom(0, view.size.height);
-        var currCircle = new Path.Circle(new Point(x, y), myRandom(minRadius, maxRadius));
-        currCircle.fillColor = "rgb(" + myRandom(50, 256) + ", " + myRandom(50, 256) + ", " + myRandom(50, 256) + ")";
-        circles.push(currCircle);
+        if(soundLib[event.key]) {
+            var minRadius = 100;
+            var maxRadius = 500;
+            var x = myRandom(0, view.size.width);
+            var y = myRandom(0, view.size.height);
+            var currCircle = new Path.Circle(new Point(x, y), myRandom(minRadius, maxRadius));
+            currCircle.fillColor = "rgb(" + myRandom(50, 256) + ", " + myRandom(50, 256) + ", " + myRandom(50, 256) + ")";
+            circles.push(currCircle);
+
+            new Howl({src: soundLib[event.key]}).play();
+        }
     }
 
     function onFrame(event) {
