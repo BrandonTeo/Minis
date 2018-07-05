@@ -14,13 +14,28 @@
         return Math.floor(num1 + (Math.random() * (num2 - num1)));
     }
 
+    var circles = [];
     function onKeyDown(event) {
-        var minRadius = 5;
-        var maxRadius = 30;
+        var minRadius = 100;
+        var maxRadius = 500;
         var x = myRandom(0, view.size.width);
         var y = myRandom(0, view.size.height);
         var currCircle = new Path.Circle(new Point(x, y), myRandom(minRadius, maxRadius));
         currCircle.fillColor = "rgb(" + myRandom(50, 256) + ", " + myRandom(50, 256) + ", " + myRandom(50, 256) + ")";
+        circles.push(currCircle);
+    }
+
+    function onFrame(event) {
+        for(var i = 0; i < circles.length; i++) {
+            circles[i].fillColor.hue += 1;
+            circles[i].scale(0.92);
+
+            if(circles[i].area < 1) {
+                circles[i].remove();
+                circles.splice(i, 1);
+                i--;
+            }
+        }
     }
 
     </script>
