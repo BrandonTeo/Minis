@@ -3,10 +3,12 @@ var express = require("express");
 var app = express();
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
+var methodOverride = require("method-override");
 
 // Set app.js settings
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride('_method'));
 
 // Setup mongoDB database
 mongoose.connect('mongodb://localhost/miniblog_app');
@@ -49,11 +51,10 @@ app.get("/blogs/new", function(req, res) {
 // CREATE route
 app.post("/blogs", function(req, res) {
     // Extract `newBlog` from `req.body` and add it to database
-    var newBlog = req.body.newBlog;
-    Blog.create(newBlog, function(err, addedBlog) {
+    Blog.create(req.body.newBlog, function(err, createdBlog) {
         if(err) {
             console.log("Error occurred when trying to add new blog.");
-            res.render("new");
+            res.redirect("/blogs/new");
         } else {
             res.redirect("/blogs");
         }
@@ -61,24 +62,52 @@ app.post("/blogs", function(req, res) {
 });
 
 // SHOW route
-// app.get("/blogs/:id", function(req, res) {
-//     res.render("show");
-// });
+app.get("/blogs/:id", function(req, res) {
+    // Attempt to find the blog with id `:id`
+    Blog.findById(req.params.id, function(err, foundBlog) {
+        if(err) {
+            console.log("Error occurred when trying to find and show blog.");
+            res.redirect("/blogs");
+        } else {
+            res.render("show", {blog: foundBlog});
+        }
+    });
+});
 
 // EDIT route
-// app.get("/blogs/:id/edit", function(req, res) {
-//     res.render("edit");
-// });
+app.get("/blogs/:id/edit", function(req, res) {
+    // Attempt to find the blog with id `:id`
+    Blog.findById(req.params.id, function(err, foundBlog) {
+        if(err) {
+            console.log("Error occurred when trying to find and edit blog.");
+            res.redirect("/blogs");
+        } else {
+            res.render("edit", {blog: foundBlog});
+        }
+    });
+});
 
 // UPDATE route
-// app.put("/blogs/:id", function(req, res) {
-//     res.render("show");
-// });
+app.put("/blogs/:id", function(req, res) {
+    // Attempt to find the blog with id `:id` and update it in our database
+    Blog.findByIdAndUpdate(req.params.id, req.body.updatedBlog, function(err, updatedBlog) {
+        if(err) {
+            console.log("Error occurred when trying to find and update blog.");
+        }
+        res.redirect("/blogs/" + updatedBlog._id);
+    });
+});
 
 // DESTROY route
-// app.delete("/blogs/:id", function(req, res) {
-//     res.render("index");
-// });
+app.delete("/blogs/:id", function(req, res) {
+    // Attempt to find the blog with id `:id` and remove it from database
+    Blog.findByIdAndRemove(req.params.id, function(err, removedBlog) {
+        if(err) {
+            console.log("Error occurred when trying to find and remove blog.");
+        }
+        res.redirect("/blogs");
+    });
+});
 
 app.get("*", function(req, res) {
     res.render("nopage");

@@ -2,6 +2,13 @@
     
 
     <h1>This is the SHOW page here!!</h1>
+    <div>
+        <p><%= blog.title %></p>
+        <p><%= blog.content %></p>
+        <img src="<%= blog.image %>">
+        <p><%= blog.date %></p>
+    </div>
+    <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST"><button type="submit">DELETE ME!!</button></form>
 
 
 <%- include('partials/footer.ejs') %>
