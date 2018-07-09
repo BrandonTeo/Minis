@@ -1,8 +1,13 @@
-<%- include("partials/header.ejs") %>
+<%- include('partials/header.ejs') %>
     
 
-    <h1>This is the main page here!!</h1>
-    <h2>Restart this pls</h2>
+    <h1>This is the INDEX page here!!</h1>
+    <% blogs.forEach(function(blog) { %>
+        <p><%= blog.title %></p>
+        <p><%= blog.content %></p>
+        <img src="<%= blog.image %>">
+        <p><%= blog.date %></p>
+    <% }) %>
 
 
-<%- include("partials/footer.ejs") %>
+<%- include('partials/footer.ejs') %>
