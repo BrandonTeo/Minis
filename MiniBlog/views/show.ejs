@@ -1,14 +1,20 @@
 <%- include('partials/header.ejs') %>
     
-
-    <h1>This is the SHOW page here!!</h1>
-    <div>
-        <p><%= blog.title %></p>
-        <p><%= blog.content %></p>
-        <img src="<%= blog.image %>">
-        <p><%= blog.date %></p>
+    <div class="container">
+        <div class="inner container">
+            <div class="card border-info">
+                <img src="<%= blog.image %>" class="card-img-top">
+                <div class="card-body">
+                    <div class="blog-title"><%= blog.title %></div>
+                    <div class="blog-date"><%= blog.date.toDateString() %></div>
+                    <div class="blog-content"><%= blog.content %></div>
+                    <div class="button-group">
+                        <a class="btn btn-outline-warning" href="/blogs/<%= blog._id %>/edit">Edit</a>
+                        <form class="delete-inline" action="/blogs/<%= blog._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-primary btn-outline-danger">Delete</button></form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <form action="/blogs/<%= blog._id %>?_method=DELETE" method="POST"><button type="submit">DELETE ME!!</button></form>
-
 
 <%- include('partials/footer.ejs') %>

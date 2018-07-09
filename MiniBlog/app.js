@@ -7,11 +7,13 @@ var methodOverride = require("method-override");
 
 // Set app.js settings
 app.set("view engine", "ejs");
+app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 
 // Setup mongoDB database
-mongoose.connect('mongodb://localhost/miniblog_app');
+var dbName = 'miniblog_app'
+mongoose.connect('mongodb://localhost/' + dbName);
 var blogSchema = new mongoose.Schema({
     title: String,
     content: String,
@@ -19,10 +21,6 @@ var blogSchema = new mongoose.Schema({
     date: {type: Date, default: Date.now}
 });
 var Blog = mongoose.model("Blog", blogSchema);
-
-// Blog.create({title: "B1", content:"This is B1..", image: "https://www.w3schools.com/w3css/img_lights.jpg"});
-// Blog.create({title: "B2", content:"This is B2..", image: "https://www.w3schools.com/w3css/img_lights.jpg"});
-// Blog.create({title: "B3", content:"This is B3..", image: "https://www.w3schools.com/w3css/img_lights.jpg"});
 
 // ------- RESTFUL ROUTES -------
 app.get("/", function(req, res) {
@@ -113,7 +111,6 @@ app.get("*", function(req, res) {
     res.render("nopage");
 });
 // ------------------------------
-
 
 // Listen on port 4000
 app.listen(4000, function(req, res) {

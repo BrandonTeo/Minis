@@ -1,0 +1,66 @@
+body {
+    background: rgb(247, 244, 244);
+    width: 800px;
+    max-width: 80%;
+    margin: 80px auto;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+h1 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+}
+
+.starting-h1 {
+    margin: 20px 30px;
+}
+
+.inner {
+    border: 2px solid rgb(189, 186, 186);
+    border-radius: 1%;
+    padding: 0;
+}
+
+.card {
+    background: rgb(253, 252, 252);
+    margin: 20px 20px;
+    padding: 0;
+}
+
+.img-thumbnail {
+    width: 200px;
+}
+
+.blog-title {
+    font-weight: bold;
+    font-size: 28px;
+}
+
+.blog-date {
+    font-weight: 600;
+    font-size: 20px;
+    color: gray;
+}
+
+.readmore-btn {
+    float: right;
+    margin-top: 15px;
+}
+
+.submit-btn {
+    margin-top: 10px;
+}
+
+.button-group {
+    float: right;
+    margin-top: 80px;
+}
+
+.delete-inline {
+    display: inline;
+}
+

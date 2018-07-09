@@ -1,22 +1,28 @@
 <%- include('partials/header.ejs') %>
-    
 
-    <h1>This is the NEW page here!!</h1>
-    <form action="/blogs" method="POST">
-        <div>
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="newBlog[title]">
+    <div class="container">
+        <div class="inner container">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h1>New Post</h1>
+                    <form action="/blogs" method="POST">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" class="form-control" name="newBlog[title]" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Image source</label>
+                            <input type="text" class="form-control" name="newBlog[image]" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Content</label>
+                            <textarea type="text" class="form-control"  rows="6" name="newBlog[content]" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="content">Content:</label>
-            <input type="text" id="content" name="newBlog[content]">
-        </div>
-        <div>
-            <label for="image">Image source:</label>
-            <input type="text" id="image" name="newBlog[image]">
-        </div>
-        <input type="submit">
-    </form>
-
+    </div>
 
 <%- include('partials/footer.ejs') %>
