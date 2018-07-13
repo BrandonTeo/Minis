@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Word Counter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Gaegu:400,700" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="mid-page">
+        <h1>Word Counter</h1>
+        <div>Please enter text below:</div>
+        <form action="{% url 'result' %}">
+            <textarea name="text" id="" cols="75" rows="20"></textarea>
+            <br>
+            <button class="btn btn-sm btn-primary spacing" type="submit">Count !!!</button>
+        </form>
+    </div>
+
+</body>
+</html>
