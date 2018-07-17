@@ -3,11 +3,12 @@ from flask_jwt import jwt_required
 from models.item import ItemModel
 
 # A `Resource` is one that we can perform CRUD operations on in a RESTful scheme
-class Inventory(Resource):
+class ItemList(Resource):
     # Initialize a parser for this resource
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True)
     parser.add_argument('price', type=float, required=True)
+    parser.add_argument('store_id', type=int, required=True)
     
     # INDEX route
     def get(self):
@@ -16,11 +17,11 @@ class Inventory(Resource):
     # CREATE route
     @jwt_required()
     def post(self):
-        body = Inventory.parser.parse_args()
+        body = ItemList.parser.parse_args()
         if ItemModel.find_item_by_name(body['name']):
             return "This item already exist", 400
 
-        item = ItemModel(body['name'], body['price'])
+        item = ItemModel(body['name'], body['price'], body['store_id'])
         item.save_to_db()
 
         return "Added item to our inventory.", 201
@@ -32,13 +33,14 @@ class Item(Resource):
     # Notice that for this parser we don't want `name` since we don't want to allow updating
     # of the field `name` and only `price`
     parser.add_argument('price', type=float)
+    parser.add_argument('store_id', type=int)
 
     # SHOW route
     def get(self, item_name):
-        result = ItemModel.find_item_by_name(item_name)
+        item = ItemModel.find_item_by_name(item_name)
 
-        if result:
-            return result.json()
+        if item:
+            return item.json()
         else:
             return "This item does not exist -> unable to show.", 400
 
@@ -51,6 +53,7 @@ class Item(Resource):
         
         body = Item.parser.parse_args()
         item.price = body['price']
+        item.store_id = body['store_id']
         item.save_to_db()
 
         return "Successfully updated item", 201

@@ -3,7 +3,8 @@ from flask_restful import Api
 from flask_jwt import JWT
 
 from resources.user import User
-from resources.item import Inventory, Item
+from resources.item import ItemList, Item
+from resources.store import StoreList, Store
 from auth import authenticate, identity
 
 app = Flask(__name__)
@@ -21,8 +22,10 @@ def initialize_db():
 
 jwt = JWT(app, authenticate, identity)
 
-api.add_resource(Inventory, '/')
+api.add_resource(ItemList, '/')
 api.add_resource(Item, '/<string:item_name>')
+api.add_resource(StoreList, '/stores')
+api.add_resource(Store, '/stores/<string:store_name>')
 api.add_resource(User, '/users')
 
 if __name__ == '__main__':

@@ -22,11 +22,11 @@ class UserModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
-        db.commit()
+        db.session.commit()
 
     def delete_from_db(self):
         db.session.delete(self)
-        db.commit()
+        db.session.commit()
 
     def json(self):
-        return {'username': self.username, 'password': self.password}
+        return {'username': self.username}
