@@ -2,13 +2,11 @@ from flask import Flask
 from flask import request # This import lets us access the request of the incoming API calls
 from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "*T87&*(g99*H"
 api = Api(app)
-
-# Temporary data structure to store our items
-inven = []
 
 # AUTH CODE ---------------------------------------------
 class User:
@@ -17,25 +15,92 @@ class User:
         self.username = username
         self.password = pw
 
-users = [User(1, 'brandon', 'password')]
-username_table = {u.username: u for u in users}
-userid_table = {u.id: u for u in users}
+    def find_user_by_name(username):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+    
+        results = cursor.execute("SELECT * FROM users WHERE username=?", (username,))
+        result = results.fetchone()
+        connection.close()
+    
+        if result:
+            return User(*result)
+        else:
+            return None
+    
+    def find_user_by_id(_id):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+    
+        results = cursor.execute("SELECT * FROM users WHERE id=?", (_id,))
+        result = results.fetchone()
+        connection.close()
+    
+        if result:
+            return User(*result)
+        else:
+            return None
+
 
 def authenticate(un, pw):
-    user = username_table.get(un, None)
+    user = User.find_user_by_name(un)
     if user and user.password == pw:
         return user
 
 def identity(payload):
     userid = payload['identity']
-    user = userid_table.get(userid, None)
+    user = User.find_user_by_id(userid)
     return user
 
 jwt = JWT(app, authenticate, identity)
 # -------------------------------------------------------
 
+def initialize_db():
+    connection = sqlite3.connect('data.db')
+    cursor = connection.cursor()
 
-# # A `Resource` is one that we can perform CRUD operations on in a RESTful scheme
+    create_item_table = "CREATE TABLE IF NOT EXISTS items (name text, price real)"
+    create_user_table = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username text, password text)"
+
+    cursor.execute(create_item_table)
+    cursor.execute(create_user_table)
+
+    connection.close()
+
+
+class UserResource(Resource):
+    # Initialize a parser for this resource
+    parser = reqparse.RequestParser()
+    parser.add_argument('username', type=str, required=True)
+    parser.add_argument('password', type=str, required=True)
+
+    def get(self):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        results = cursor.execute("SELECT * FROM users")
+        users = []
+        for result in results:
+            users.append({'username': result[1]})
+
+        return {'allusers': users}
+
+    def post(self):
+        body = UserResource.parser.parse_args()
+
+        if User.find_user_by_name(body['username']):
+            return "This username already exists", 400
+        else:
+            connection = sqlite3.connect('data.db')
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO users VALUES (NULL, ?, ?)", (body['username'], body['password']))
+            
+            connection.commit()
+            connection.close()
+            return "Successfully registered user.", 201
+
+
+# A `Resource` is one that we can perform CRUD operations on in a RESTful scheme
 class Inventory(Resource):
     # Initialize a parser for this resource
     parser = reqparse.RequestParser()
@@ -44,19 +109,35 @@ class Inventory(Resource):
     
     # INDEX route
     def get(self):
-        return {'allitems': inven}
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        results = cursor.execute("SELECT * FROM items")
+        items = []
+        for result in results:
+            items.append({'name': result[0], 'price': result[1]})
+
+        return {'allitems': items}
 
     # CREATE route
     @jwt_required()
     def post(self):
         body = Inventory.parser.parse_args()
-        item = next(filter(lambda x: x['name'] == body['name'], inven), None)
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
 
-        if item:
+        results = cursor.execute("SELECT * FROM items WHERE name=?", (body['name'],))
+        result = results.fetchone()
+
+        if result:
             return "This item already exist", 400
-        else:
-            inven.append(body)
-            return "Added item to our inventory.", 201
+        
+        cursor.execute("INSERT INTO items VALUES (?, ?)", (body['name'], body['price']))
+        connection.commit()
+        connection.close()
+
+        return "Added item to our inventory.", 201
+
 
 class Item(Resource):
     # Initialize a parser for this resource
@@ -67,9 +148,15 @@ class Item(Resource):
 
     # SHOW route
     def get(self, item_name):
-        item = next(filter(lambda x: x['name'] == item_name, inven), None)
-        if item:
-            return {'name': item['name'], 'price':item['price']}
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        results = cursor.execute("SELECT * FROM items WHERE name=?", (item_name,))
+        result = results.fetchone()
+        connection.close()
+
+        if result:
+            return {'name': result[0], 'price': result[1]}
         else:
             return "This item does not exist -> unable to show.", 400
 
@@ -77,27 +164,45 @@ class Item(Resource):
     @jwt_required()
     def put(self, item_name):
         body = Item.parser.parse_args()
-        item = next(filter(lambda x: x['name'] == item_name, inven), None)
-        if item:
-            item.update(body)
-            return "Successfully updated item", 201
-        else:
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        results = cursor.execute("SELECT * FROM items WHERE name=?", (item_name,))
+        result = results.fetchone()
+
+        if not result:
             return "This item does not exist -> unable to update.", 400
+        
+        cursor.execute("UPDATE items SET price=? WHERE name=?", (body['price'], item_name))
+        connection.commit()
+        connection.close()
+
+        return "Successfully updated item", 201
 
     # DESTROY route
     @jwt_required()
     def delete(self, item_name):
-        global inven # Need to do this if we're assigning smth to it
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
 
-        item = next(filter(lambda x: x['name'] == item_name, inven), None)
-        if item:
-            inven = list(filter(lambda x: x['name'] != item_name, inven))
-            return "Successfully deleted item", 201
-        else:
+        results = cursor.execute("SELECT * FROM items WHERE name=?", (item_name,))
+        result = results.fetchone()
+
+        if not result:
             return "This item does not exist -> unable to delete.", 400
+        
+        cursor.execute("DELETE FROM items WHERE name=?", (item_name,))
+        connection.commit()
+        connection.close()
+
+        return "Successfully deleted item", 201
 
 
 api.add_resource(Inventory, '/')
 api.add_resource(Item, '/<string:item_name>')
+api.add_resource(UserResource, '/users')
 
-app.run(port=5000, debug=True)
+
+if __name__ == '__main__':
+    initialize_db()
+    app.run(port=5000, debug=True)
