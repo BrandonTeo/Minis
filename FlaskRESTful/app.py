@@ -1,45 +1,32 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
-import sqlite3
 
-from user import User, UserResource
-from item import Inventory, Item
+from resources.user import User
+from resources.item import Inventory, Item
+from auth import authenticate, identity
 
 app = Flask(__name__)
+
+# Connects `data.db` to SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 app.secret_key = "*T87&*(g99*H"
 api = Api(app)
 
-# AUTH CODE ---------------------------------------------
-def authenticate(un, pw):
-    user = User.find_user_by_name(un)
-    if user and user.password == pw:
-        return user
-
-def identity(payload):
-    userid = payload['identity']
-    user = User.find_user_by_id(userid)
-    return user
+@app.before_first_request
+def initialize_db():
+    db.create_all()
 
 jwt = JWT(app, authenticate, identity)
-# -------------------------------------------------------
 
 api.add_resource(Inventory, '/')
 api.add_resource(Item, '/<string:item_name>')
-api.add_resource(UserResource, '/users')
-
-def initialize_db():
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-
-    create_item_table = "CREATE TABLE IF NOT EXISTS items (name text, price real)"
-    create_user_table = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username text, password text)"
-
-    cursor.execute(create_item_table)
-    cursor.execute(create_user_table)
-
-    connection.close()
+api.add_resource(User, '/users')
 
 if __name__ == '__main__':
-    initialize_db()
+    from db import db
+    db.init_app(app)
+
     app.run(port=5000, debug=True)
