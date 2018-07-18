@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from flask_jwt_extended import jwt_required, get_jwt_claims, fresh_jwt_required
 from models.store import StoreModel
 
 # A `Resource` is one that we can perform CRUD operations on in a RESTful scheme
@@ -12,6 +13,7 @@ class StoreList(Resource):
         return {'allstores': [store.json() for store in StoreModel.query.all()]}
 
     # CREATE route
+    @jwt_required
     def post(self):
         body = StoreList.parser.parse_args()
         if StoreModel.find_store_by_name(body['name']):
@@ -40,21 +42,13 @@ class Store(Resource):
         else:
             return "This store does not exist -> unable to show.", 400
 
-    # # UPDATE route
-    # def put(self, item_name):
-    #     item = ItemModel.find_item_by_name(item_name)
-    #     if not item:
-    #         return "This item does not exist -> unable to update.", 400
-        
-    #     body = Item.parser.parse_args()
-    #     item.price = body['price']
-    #     item.store_id = body['store_id']
-    #     item.save_to_db()
-
-    #     return "Successfully updated item", 201
-
     # DESTROY route
+    @fresh_jwt_required # Make it so that in addition to being logged in as an admin, we also need the token to be fresh
     def delete(self, store_name):
+        claim = get_jwt_claims()
+        if not claim['is_admin']:
+            return "Admin privileges required.", 401
+
         store = StoreModel.find_store_by_name(store_name)
         if not store:
             return "This store does not exist -> unable to delete.", 400
