@@ -18,8 +18,5 @@ Tutorial project for Django(Python).
 ### MiniBlog
 A simple online blog implementation.
 
-### Patatap
-A clone of patatap.com
-
 ### ToDoList
 A simple to-do-list web app.
