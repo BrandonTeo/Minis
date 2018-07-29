@@ -1,5 +1,8 @@
 # Minis
 
+### D3SVGTutorial
+Tutorial project for usage of D3 & SVG libraries.
+
 ### AddressCorrector
 Uses the Google Maps Geocoding API to correct addresses that are slightly off.
 
@@ -7,7 +10,7 @@ Uses the Google Maps Geocoding API to correct addresses that are slightly off.
 Tutorial project of using FlaskRESTful & FlaskJWT.
 
 ### ExpressTutorial
-Tutorial projects for Express(Node.js).
+Tutorial project for Express(Node.js).
 
 ### ColorGame
 An RGB color guessing game.
