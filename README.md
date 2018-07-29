@@ -1,8 +1,5 @@
 # Minis
 
-### D3SVGTutorial
-Tutorial project for usage of D3 & SVG libraries.
-
 ### AddressCorrector
 Uses the Google Maps Geocoding API to correct addresses that are slightly off.
 
