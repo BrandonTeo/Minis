@@ -1,3 +1,10 @@
+var svg_width = 400;
+var svg_height = 200;
+var bar_padding = 10;
+
+var svg = d3.select("svg").attr("width", svg_width)
+                          .attr("height", svg_height);
+
 function getFrequencies(word) {
     var dict = []
     var sortedSplits = word.split("").sort();
@@ -21,11 +28,14 @@ d3.select("form").on("submit", function() {
     d3.event.preventDefault();
 
     var input = d3.select("input").property("value");
+    var formatted_input = getFrequencies(input);
+
+    var bar_width = svg_width/formatted_input.length - bar_padding;
     
-    var updates = d3.select("#letters").selectAll(".letter")
-                                       .data(getFrequencies(input), function(d) {
-                                            return d.character;
-                                       });
+    var updates = svg.selectAll(".letter")
+                     .data(formatted_input, function(d) {
+                         return d.character;
+                     });
                               
     // Step 1 & 2 of update pattern
     updates
@@ -33,20 +43,42 @@ d3.select("form").on("submit", function() {
         .exit()
         .remove();
     
-    updates
-        .enter() // Step 3 of update pattern
-        .append("div")
-          .classed("letter", true)
-          .classed("new", true)
-        .merge(updates)
-          .style("width", "20px")
-          .style("line-height", "20px")
-          .style("margin-right", "5px")
-          .style("height", function(d) {
-            return d.count * 20 + "px";
+    var enters = updates
+                    .enter() // Step 3 of update pattern
+                    .append("g")
+                    .classed("letter", true)
+                    .classed("new", true)
+    
+    // To nest elements, we'll need to save the parent to a variable and append
+    // (!!) enters.append("rect").append("text") will append `text` within `rect`
+    enters.append("rect")
+    enters.append("text");
+
+    enters.merge(updates)
+          .select("text")
+          .attr("text-anchor", "middle")
+          .attr("color", "black")
+          .attr("x", function(d, i) {
+            return (bar_width + bar_padding) * i + bar_width/2;
+          })
+          .attr("y", function(d) {
+            return svg_height - d.count * 20 - 10;
           })
           .text(function(d) {
             return d.character;
+          });
+
+    enters.merge(updates) // Step 4 of update pattern
+          .select("rect")
+          .attr("width", bar_width)
+          .attr("height", function(d) {
+             return (d.count * 20);
+          })
+          .attr("x", function(d, i) {
+              return (bar_width + bar_padding) * i;
+          })
+          .attr("y", function(d) {
+              return svg_height - d.count * 20;
           });
 
     d3.select("#phrase").text("Analysis of: " + input);
